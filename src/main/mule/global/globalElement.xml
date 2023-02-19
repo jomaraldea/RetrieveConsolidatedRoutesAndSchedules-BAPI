@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	
+	<http:listener-config name="retrieveconsolidatedroutesandschedulesxpapi-httpListenerConfig">
+        <http:listener-connection host="${http.listener.host}" port="${http.listener.port}" />
+    </http:listener-config>
+    <apikit:config name="retrieveconsolidatedroutesandschedulesxpapi-config" api="retrieveconsolidatedroutesandschedulesxpapi.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <http:request-config name="HTTP_Request_configuration_TravelOnTip-SAPI" doc:name="HTTP Request configuration" doc:id="ba954ed1-7baf-46d3-95b2-7a3fea212f87" >
+		<http:request-connection host="${http.requester.travelOnTip.host}" port="${http.requester.travelOnTip.port}" />
+	</http:request-config>
+	<http:request-config name="HTTP_Request_configuration_FastGo-SAPI" doc:name="HTTP Request configuration" doc:id="49469131-2e59-4b6c-9176-db23a054dba8" >
+		<http:request-connection host="${http.requester.fastGo.host}" port="${http.requester.fastGo.port}" />
+	</http:request-config>
+	<configuration doc:name="Configuration" doc:id="f9b19e34-c970-4770-a29b-7137d0ff222d" defaultErrorHandler-ref="globalErrorHandlerError_Handler" />
+	<configuration-properties doc:name="Configuration properties" doc:id="5cb024e2-ef5e-4126-9cbf-bf92ec76b7f0" file="config/${MULE_ENV}.yaml" />
+	
+	</mule>

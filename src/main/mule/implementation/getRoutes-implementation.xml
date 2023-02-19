@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="getRoutes-implementationSub_Flow" doc:id="ae0bd794-3d30-482a-8dff-b075673b5be5" >
+		<choice doc:name="Choice" doc:id="db8d66b4-a43d-45d7-a237-f8851c5514a4" >
+			<when expression='#[vars.transportCompany == "FastGo"]'>
+				<flow-ref doc:name="Flow Reference" doc:id="b6c5b03e-1f1d-421f-9380-480131d47c51" name="getRoutes-CallFastGo-implementationSub_Flow"/>
+			</when>
+			<when expression='#[vars.transportCompany == "TravelOnTip"]'>
+				<flow-ref doc:name="Flow Reference" doc:id="b24c42c9-b07a-4dfc-b184-78d6001934ec" name="getRoutes-CallTravelOnTip-implementationSub_Flow"/>
+			</when>
+			<otherwise >
+				<scatter-gather doc:name="Scatter-Gather" doc:id="ade538f7-8770-43d2-8891-976cc14bcf92" >
+					<route >
+						<flow-ref doc:name="Flow Reference" doc:id="6053c225-e439-42a2-8d50-4e8c2fd152f7" name="getRoutes-CallFastGo-implementationSub_Flow"/>
+					</route>
+					<route >
+						<flow-ref doc:name="Flow Reference" doc:id="7e215011-1267-4dd2-a144-ab61a64bc08c" name="getRoutes-CallTravelOnTip-implementationSub_Flow"/>
+					</route>
+				</scatter-gather>
+				<ee:transform doc:name="Transform Message" doc:id="ef2409c5-d389-486e-9e59-c63bc701ce3f" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+flatten(payload..payload)]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</sub-flow>
+	<sub-flow name="getRoutes-CallFastGo-implementationSub_Flow" doc:id="77bea0b2-ca4e-482c-a318-d9962be1e50c" >
+		<http:request method="GET" doc:name="Request" doc:id="a9c1591f-2174-40b5-9db1-55973442e226" config-ref="HTTP_Request_configuration_FastGo-SAPI" path="#[&quot;/api/&quot; ++ (vars.transportType default &quot;&quot;) ++ p('http.requester.fastGo.routespath')]">
+					<http:headers><![CDATA[#[output application/java
+---
+{
+	"transactionId" : vars.transactionId
+}]]]></http:headers>
+				</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="4ed477c6-9473-4866-a964-7ff821c8fd28">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload map(value, index) -> (
+	{
+    	"companyCode": vars.transportCompany,
+    	"originLocation": {
+    		"locationCode": value.departureLocationCode,
+      		"locationDesc": "Buena Vista Singapore"
+    	},
+    	"destinationLocation": {
+    		"locationCode": value.arrivalLocationGo,
+      		"locationDesc": "Kalang Malaysia"
+    	}
+  }
+)]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+	</sub-flow>
+	<sub-flow name="getRoutes-CallTravelOnTip-implementationSub_Flow" doc:id="1bf5d92a-f0ac-425c-b004-4c49f317a015" >
+		<http:request method="GET" doc:name="Request" doc:id="29f3cdc9-6fd7-4441-93ca-79fc9dfbf744" config-ref="HTTP_Request_configuration_TravelOnTip-SAPI" path="#[&quot;/api/&quot; ++ (vars.transportType default &quot;&quot;) ++ p('http.requester.travelOnTip.routespath')]">
+					<http:headers><![CDATA[#[output application/java
+---
+{
+	"transactionId" : vars.transactionId
+}]]]></http:headers>
+				</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="8766ee67-825a-4a2b-922c-09e69a70c7b6">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload map(value, index) -> (
+	{
+    	"companyCode": vars.transportCompany,
+    	"originLocation": {
+    		"locationCode": value.originLocation.locationCode,
+      		"locationDesc": "Buena Vista Singapore"
+    	},
+    	"destinationLocation": {
+    		"locationCode": value.destinationLocation.locationCode,
+      		"locationDesc": "Kalang Malaysia"
+    	}
+  }
+)]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+	</sub-flow>
+</mule>

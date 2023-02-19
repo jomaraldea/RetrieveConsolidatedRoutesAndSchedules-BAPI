@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<sub-flow name="getSchedules-implementationSub_Flow" doc:id="2d3be3d5-86a5-4f26-b760-f98372cde3f3" >
+		<logger level="INFO" doc:name="Logger" doc:id="76f72133-0ac9-4207-b083-6493d3be1f3c" />
+	</sub-flow>
+</mule>
