@@ -45,17 +45,18 @@ flatten(payload..payload)]]></ee:set-payload>
 					<ee:message>
 						<ee:set-payload><![CDATA[%dw 2.0
 output application/json
+var LocationMapping = readUrl("classpath://json/LocationCodeMapping.json", "application/json")
 ---
 payload map(value, index) -> (
 	{
-    	"companyCode": vars.transportCompany,
+    	"companyCode": vars.transportCompany default "FastGo",
     	"originLocation": {
     		"locationCode": value.departureLocationCode,
-      		"locationDesc": "Buena Vista Singapore"
+      		"locationDesc": (LocationMapping filter($.locationCode == value.departureLocationCode))[0].locationDesc
     	},
     	"destinationLocation": {
     		"locationCode": value.arrivalLocationGo,
-      		"locationDesc": "Kalang Malaysia"
+      		"locationDesc": (LocationMapping filter($.locationCode == value.arrivalLocationGo))[0].locationDesc
     	}
   }
 )]]></ee:set-payload>
@@ -74,17 +75,18 @@ payload map(value, index) -> (
 					<ee:message>
 						<ee:set-payload><![CDATA[%dw 2.0
 output application/json
+var LocationMapping = readUrl("classpath://json/LocationCodeMapping.json", "application/json")
 ---
 payload map(value, index) -> (
 	{
-    	"companyCode": vars.transportCompany,
+    	"companyCode": vars.transportCompany default "TravelOnTip",
     	"originLocation": {
     		"locationCode": value.originLocation.locationCode,
-      		"locationDesc": "Buena Vista Singapore"
+      		"locationDesc": (LocationMapping filter($.locationCode == value.originLocation.locationCode))[0].locationDesc
     	},
     	"destinationLocation": {
     		"locationCode": value.destinationLocation.locationCode,
-      		"locationDesc": "Kalang Malaysia"
+      		"locationDesc": (LocationMapping filter($.locationCode == value.destinationLocation.locationCode))[0].locationDesc
     	}
   }
 )]]></ee:set-payload>
